@@ -10,7 +10,7 @@ Configure
 =========
 
 * Add :code:`crowd_auth` to :code:`INSTALLED_APPS` inside settings file,
-* Add :code:`crowd_auth.Backend` to :code:`AUTHENTICATION_BACKENDS` inside settings file.
+* Add :code:`crowd_auth.backend.CrowdBackend` to :code:`AUTHENTICATION_BACKENDS` inside settings file.
 
 
 Settings
