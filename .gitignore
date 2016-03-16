@@ -1,0 +1,6 @@
+*.py[cod]
+docs/_build
+build
+dist
+.tox
+__pycache__
