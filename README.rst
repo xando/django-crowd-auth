@@ -19,7 +19,6 @@ Settings
 * :code:`AUTH_CROWD_APPLICATION_PASSWORD`
 * :code:`AUTH_CROWD_APPLICATION_USER`
 * :code:`AUTH_CROWD_SERVER_REST_URI`
-
       Required settings, will be used connect to Crowd server on the given application and given URL resource.
 
 * :code:`AUTH_CROWD_ALWAYS_UPDATE_USER = False # default`
