@@ -3,18 +3,18 @@ import requests
 
 from django.contrib.auth.models import User, Group
 
-import crowd
+import crowd_auth
 
 logger = logging.getLogger(__name__)
 
 
 class CrowdBackend(object):
 
-    AUTH = (crowd.AUTH_CROWD_APPLICATION_USER,
-            crowd.AUTH_CROWD_APPLICATION_PASSWORD)
+    AUTH = (crowd_auth.AUTH_CROWD_APPLICATION_USER,
+            crowd_auth.AUTH_CROWD_APPLICATION_PASSWORD)
 
     def sync_user(self, user):
-        if not crowd.AUTH_CROWD_ALWAYS_UPDATE_USER:
+        if not crowd_auth.AUTH_CROWD_ALWAYS_UPDATE_USER:
             return
         data = self.crowd_user(user.username)
         user.first_name = data.get('first-name', user.first_name)
@@ -24,29 +24,29 @@ class CrowdBackend(object):
         user.save()
 
     def sync_groups(self, user):
-        if not crowd.AUTH_CROWD_ALWAYS_UPDATE_GROUPS:
+        if not crowd_auth.AUTH_CROWD_ALWAYS_UPDATE_GROUPS:
             return
         data = self.crowd_get_groups(user.username)
         group_names = [x["name"] for x in data["groups"]]
-        group_map = crowd.AUTH_CROWD_GROUP_MAP
+        group_map = crowd_auth.AUTH_CROWD_GROUP_MAP
         group_names = [group_map.get(x, x) for x in group_names]
         group_names = set(group_names)
 
-        su_group = crowd.AUTH_CROWD_SUPERUSER_GROUP
+        su_group = crowd_auth.AUTH_CROWD_SUPERUSER_GROUP
         if su_group:
             if su_group in group_names:
                 user.is_superuser = True
             else:
                 user.is_superuser = False
 
-        staff_group = crowd.AUTH_CROWD_STAFF_GROUP
+        staff_group = crowd_auth.AUTH_CROWD_STAFF_GROUP
         if staff_group:
             if staff_group in group_names:
                 user.is_staff = True
             else:
                 user.is_staff = False
 
-        if crowd.AUTH_CROWD_CREATE_GROUPS:
+        if crowd_auth.AUTH_CROWD_CREATE_GROUPS:
             user.groups = [
                 Group.objects.get_or_create(name=g)[0] for g in group_names
             ]
@@ -65,7 +65,7 @@ class CrowdBackend(object):
 
         self.sync_user(user)
 
-        if crowd.AUTH_CROWD_ALWAYS_UPDATE_GROUPS:
+        if crowd_auth.AUTH_CROWD_ALWAYS_UPDATE_GROUPS:
             self.sync_groups(user)
             save_user = True
 
@@ -78,7 +78,7 @@ class CrowdBackend(object):
         logger.debug("Fetching details of '%s'..." % username)
 
         url = "%suser.json?username=%s" % (
-            crowd.AUTH_CROWD_SERVER_REST_URI,
+            crowd_auth.AUTH_CROWD_SERVER_REST_URI,
             username
         )
 
@@ -91,7 +91,7 @@ class CrowdBackend(object):
     def crowd_get_groups(self, username):
 
         url = "%suser/group/nested.json?username=%s" % (
-            crowd.AUTH_CROWD_SERVER_REST_URI,
+            crowd_auth.AUTH_CROWD_SERVER_REST_URI,
             username
         )
 
@@ -104,7 +104,7 @@ class CrowdBackend(object):
     def crowd_authentication(self, username, password):
 
         url = "%sauthentication.json?username=%s" % (
-            crowd.AUTH_CROWD_SERVER_REST_URI,
+            crowd_auth.AUTH_CROWD_SERVER_REST_URI,
             username
         )
 
